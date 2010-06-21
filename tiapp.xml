@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ti:app xmlns:ti="http://ti.appcelerator.org">
+<id>com.maxogden.couchphone</id>
+<name>CouchPhone</name>
+<version>1.0</version>
+<publisher>Max Ogden</publisher>
+<url>http://www.pdxapi.com</url>
+<description>Data browser for CouchDB GeoCouch</description>
+<copyright>2010 by Max Ogden</copyright>
+<icon>default_app_logo.png</icon>
+    <persistent-wifi>false</persistent-wifi>
+    <prerendered-icon>false</prerendered-icon>
+    <statusbar-style>default</statusbar-style>
+    <statusbar-hidden>false</statusbar-hidden>
+    <fullscreen>false</fullscreen>
+    <navbar-hidden>false</navbar-hidden>
+    <analytics>true</analytics>
+<guid>b38d61d9-7038-442c-97e3-13f999264f1e</guid>
+</ti:app>
