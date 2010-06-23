@@ -8,18 +8,18 @@
 #define STRING(x) _QUOTEME(x)
 
 NSString * const TI_APPLICATION_DEPLOYTYPE = @"development";
-NSString * const TI_APPLICATION_ID = @"com.maxogden.couchphone";
+NSString * const TI_APPLICATION_ID = @"com.maxogden.foodcartspdx";
 NSString * const TI_APPLICATION_PUBLISHER = @"Max Ogden";
-NSString * const TI_APPLICATION_URL = @"http://www.pdxapi.com";
-NSString * const TI_APPLICATION_NAME = @"CouchPhone";
+NSString * const TI_APPLICATION_URL = @"http://pdxapi.com";
+NSString * const TI_APPLICATION_NAME = @"CartsPDX";
 NSString * const TI_APPLICATION_VERSION = @"1.0";
-NSString * const TI_APPLICATION_DESCRIPTION = @"Data browser for CouchDB GeoCouch";
+NSString * const TI_APPLICATION_DESCRIPTION = @"Find Food Carts in Portland, OR";
 NSString * const TI_APPLICATION_COPYRIGHT = @"2010 by Max Ogden";
-NSString * const TI_APPLICATION_GUID = @"b38d61d9-7038-442c-97e3-13f999264f1e";
+NSString * const TI_APPLICATION_GUID = @"6ac2e9d7-7bc8-4779-9f19-5080cbb53d7f";
 BOOL const TI_APPLICATION_ANALYTICS = true;
 
 #ifdef TARGET_IPHONE_SIMULATOR
-NSString * const TI_APPLICATION_RESOURCE_DIR = @"/Users/revelation/CouchPhone/Resources";
+NSString * const TI_APPLICATION_RESOURCE_DIR = @"/Users/revelation/Titanium/CartsPDX/Resources";
 #endif
 
 int main(int argc, char *argv[]) {
