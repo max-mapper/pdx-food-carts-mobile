@@ -1,0 +1,14 @@
+<h1>PDX Food Cart Finder/Editor</h1> ... is a mobile application built using the Titanium framework. This means that the javascript source code found here can be imported into a Titanium Mobile project which can generate either an iPhone or Android native application.
+
+The application itself allows the user the find food carts near their current location. If they wish to edit the details of a food cart (location, hours of operation, menu, etc) they can do so from inside the application. All data, including changes made by the user, are stored publicly on PDXAPI. Changes made by any user will show up for all other users, much like a wiki.
+
+h2. Usage
+
+* Install Titanium from http://www.appcelerator.com/products/download/
+* Make a new Mobile application
+* Place the files from this git repository into the Resources directory in your new Mobile app
+* use Titanium Developer.app to generate an iPhone/Android app
+
+h2. Copyright
+
+Copyright (c) 2010 Max Ogden. See LICENSE for details.
