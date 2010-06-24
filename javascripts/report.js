@@ -7,17 +7,16 @@ var revision;
 var mapview;
 
 function getCarts(location) {
-  var one_block = 0.0012;
+  var one_block = 0.0024;
   var lat = location.latitude;
   var lon = location.longitude;
-  var url = "http://data.pdxapi.com/food_carts/_design/geojson/_spatial/points?bbox="+ (lon - one_block) + "," + (lat - one_block) + "," + (lon + one_block) + "," + (lat + one_block);
+  var url = "http://data.pdxapi.com/food_carts/_design/names/_spatial/points?bbox="+ (lon - one_block) + "," + (lat - one_block) + "," + (lon + one_block) + "," + (lat + one_block);
   var xhr = Titanium.Network.createHTTPClient();
   xhr.onload = function() {
       var response = JSON.parse(this.responseText).spatial;
       var carts = Enumerable.map(response, function(cart){
-        return {latitude: cart.bbox[1], longitude: cart.bbox[0], id:cart.id};
+        return {latitude: cart.bbox[1], longitude: cart.bbox[0], id:cart.id, name:cart.value.name};
       });
-      Ti.API.info(carts);
       showCarts(carts);
   };
   Ti.API.info("looking up carts at "+url);
@@ -44,11 +43,32 @@ function showCarts(carts) {
         latitude: carts[i].latitude,
         longitude: carts[i].longitude,
         pincolor: Ti.Map.ANNOTATION_RED,
-        animate: false
+        title:carts[i].name,
+        rightButton: '../images/blue_edit.png',
+        animate: false,
+        couch_id: carts[i].id
     });
     annotations = annotations.concat(a);
   }  
   displayAnnotations();
+  mapview.addEventListener('click',function(evt) {
+    // map event properties
+  	var annotation = evt.annotation;
+  	var title = evt.title;
+  	var clickSource = evt.clicksource;
+  	var couch_id = evt.annotation.couch_id;
+
+  	// use custom event attribute to determine if atlanta annotation was clicked
+  	if (evt.clicksource == 'rightButton') {
+  	  var win = Titanium.UI.createWindow({
+    		url:'edit_details.js',
+    		backgroundColor:'#fff',
+    		title: "Editing " + title,
+    		couch_id: couch_id
+    	});
+    	Titanium.UI.currentTab.open(win,{animated:true});
+  	}
+  });
 }
 
 Titanium.Geolocation.getCurrentPosition(function(e) {
@@ -65,5 +85,10 @@ Titanium.Geolocation.getCurrentPosition(function(e) {
   win.open(mapview);
   win.add(mapview);
   
-  getCarts({ latitude: location.latitude, longitude: location.longitude });
+  
+  mapview.addEventListener('regionChanged',function(evt){
+    var bounds = GeoHelper.getMapBounds(evt);
+    getCarts({ latitude: bounds.center.lat, longitude: bounds.center.lng });
+  });
+  
 });

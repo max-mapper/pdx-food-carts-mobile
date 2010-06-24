@@ -69,4 +69,5 @@ var GeoHelper = {
       b.center.lng = (b.southWest.lng + b.northEast.lng) / 2;
       return b;
   }
-};
+}
+

@@ -5,7 +5,7 @@ Ti.UI.setBackgroundColor('white');
 var tabGroup = Titanium.UI.createTabGroup();
 var win = Titanium.UI.createWindow({  
   url:'javascripts/report.js',
-  title:'Browsing Carts Near You',
+  title:'Find Carts',
   barColor:"#333",
 });
 var reportTab = Titanium.UI.createTab({  
