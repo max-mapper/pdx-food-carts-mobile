@@ -31,9 +31,7 @@ function showLocation(location) {
       annotations = [];
     }
     
-   Titanium.API.info('maps region has updated to '+evt.longitude+','+evt.latitude);
    var bounds = GeoHelper.getMapBounds(evt);
-   Titanium.API.info('center: '+bounds.center.lat+','+bounds.center.lng);
 
     hideAnnotations();
     var a = Ti.Map.createAnnotation({

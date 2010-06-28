@@ -101,14 +101,10 @@ function retrieveTwitterFeed() {
 	var url = "http://search.twitter.com/search.json?q="+encodeURIComponent(TWITTER_ACCOUNT);
 	var xhr = Titanium.Network.createHTTPClient();
  
-  Titanium.API.info(url);
 	xhr.open("GET",url);
 	xhr.onreadystatechange = function() {
-	  Titanium.API.info(this.readyState);
-	  Titanium.API.info(this.status);
     if (this.readyState == 4) {
 			var tweets = eval('(' + this.responseText + ')');
-			Titanium.API.info(this.responseText);
 			var results = tweets.results;
 
   		for(var index in results) {

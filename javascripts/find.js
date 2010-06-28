@@ -5,6 +5,7 @@ var win = Ti.UI.currentWindow;
 var annotations = [];
 var revision;
 var mapview;
+var currentMapBounds;
 
 function getCarts(location) {
   var one_block = 0.0024;
@@ -19,7 +20,6 @@ function getCarts(location) {
       });
       showCarts(carts);
   };
-  Ti.API.info("looking up carts at "+url);
   xhr.open("GET", url);
   xhr.send();
 }
@@ -44,31 +44,13 @@ function showCarts(carts) {
         longitude: carts[i].longitude,
         pincolor: Ti.Map.ANNOTATION_RED,
         title:carts[i].name,
-        rightButton: '../images/blue_edit.png',
+      	rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE,
         animate: false,
         couch_id: carts[i].id
     });
     annotations = annotations.concat(a);
   }  
   displayAnnotations();
-  mapview.addEventListener('click',function(evt) {
-    // map event properties
-  	var annotation = evt.annotation;
-  	var title = evt.title;
-  	var clickSource = evt.clicksource;
-  	var couch_id = evt.annotation.couch_id;
-
-  	// use custom event attribute to determine if atlanta annotation was clicked
-  	if (evt.clicksource == 'rightButton') {
-  	  var win = Titanium.UI.createWindow({
-    		url:'edit_details.js',
-    		backgroundColor:'#fff',
-    		title: "Editing " + title,
-    		couch_id: couch_id
-    	});
-    	Titanium.UI.currentTab.open(win,{animated:true});
-  	}
-  });
 }
 
 Titanium.Geolocation.getCurrentPosition(function(e) {
@@ -85,10 +67,30 @@ Titanium.Geolocation.getCurrentPosition(function(e) {
   win.open(mapview);
   win.add(mapview);
   
-  
+  mapview.addEventListener('click',function(evt) {
+  	var annotation = evt.annotation;
+  	var title = evt.title;
+  	var clickSource = evt.clicksource;
+  	var couch_id = evt.annotation.couch_id;
+
+  	if (evt.clicksource == 'rightButton') {
+  	  var win = Titanium.UI.createWindow({
+    		url:'view_details.js',
+    		backgroundColor:'#fff',
+    		title: title,
+    		couch_id: couch_id
+    	});
+    	Titanium.UI.currentTab.open(win,{animated:true});
+  	}
+  });
+
   mapview.addEventListener('regionChanged',function(evt){
-    var bounds = GeoHelper.getMapBounds(evt);
-    getCarts({ latitude: bounds.center.lat, longitude: bounds.center.lng });
+    currentMapBounds = GeoHelper.getMapBounds(evt);
+    getCarts({ latitude: currentMapBounds.center.lat, longitude: currentMapBounds.center.lng });
+  });
+  
+  win.addEventListener('focus', function(){
+    getCarts({ latitude: currentMapBounds.center.lat, longitude: currentMapBounds.center.lng });
   });
   
 });

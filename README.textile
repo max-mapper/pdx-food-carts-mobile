@@ -11,4 +11,4 @@ h2. Usage
 
 h2. Copyright
 
-Copyright (c) 2010 Max Ogden. See LICENSE for details.
+Copyright (c) 2010 Max Ogden
