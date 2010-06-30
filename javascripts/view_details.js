@@ -73,47 +73,47 @@ function showForm(data) {
 		height:'auto'
 	});
 	textView.add(menuTitle);
-	
-	if (data._attachments != null && data._attachments.attachment.length != 0) {
-	  existingMenu = true;
-    imageUrl = couchUrl + "/attachment"
-  }
-  
+
 	var menu = Ti.UI.createImageView({
 		url:imageUrl,
 		top:10,
 		height:'auto'
 	});
+	
+	if (data._attachments != null && data._attachments.attachment.length != 0) {
+	  existingMenu = true;
+    menu.url = couchUrl + "/attachment"
     
-  menu.addEventListener('click', function()
-  { 
-    var w = Titanium.UI.createWindow({
-      backgroundColor: '#336699',
-      scale: true
-    });
-    
-    var close = Titanium.UI.createButton({
-  		title:'Close',
-  		top: 5,
-  		height: 40,
-  		width: 200
-  	});
+    menu.addEventListener('click', function()
+    { 
+      var w = Titanium.UI.createWindow({
+        backgroundColor: '#336699',
+        scale: true
+      });
 
-		w.add(close);
-  	
-  	close.addEventListener('click', function()
-  	{
-  		w.close();
-  	});
-  	  	
-    var wv = Ti.UI.createWebView({
-      top: 50,
-			url:"http://pdxapi.com/image/food_carts/" + detailsWin.couch_id
-		});
-		
-		w.add(wv);
-    w.open();
-  });
+      var close = Titanium.UI.createButton({
+    		title:'Close',
+    		top: 5,
+    		height: 40,
+    		width: 200
+    	});
+
+  		w.add(close);
+
+    	close.addEventListener('click', function()
+    	{
+    		w.close();
+    	});
+
+      var wv = Ti.UI.createWebView({
+        top: 50,
+  			url:"http://pdxapi.com/image/food_carts/" + detailsWin.couch_id
+  		});
+
+  		w.add(wv);
+      w.open();
+    });
+  }
 
 	textView.add(menu);
 	row.add(textView);

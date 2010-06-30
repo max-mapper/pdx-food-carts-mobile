@@ -18,6 +18,7 @@ function getCarts(location) {
       var carts = Enumerable.map(response, function(cart){
         return {latitude: cart.bbox[1], longitude: cart.bbox[0], id:cart.id, name:cart.value.name};
       });
+      Ti.App.fireEvent('cartsUpdated', {carts:carts});
       showCarts(carts);
   };
   xhr.open("GET", url);
@@ -55,6 +56,7 @@ function showCarts(carts) {
 
 Titanium.Geolocation.getCurrentPosition(function(e) {
   var location = {latitude:45.5123668,longitude:-122.6536583,animate:true,latitudeDelta:0.001, longitudeDelta:0.001};
+  // var location = {latitude:e.coords.latitude,longitude:e.coords.longitude,animate:true,latitudeDelta:0.001, longitudeDelta:0.001};
 
   mapview = Titanium.Map.createView({
   	mapType: Titanium.Map.STANDARD_TYPE,
@@ -88,9 +90,9 @@ Titanium.Geolocation.getCurrentPosition(function(e) {
     currentMapBounds = GeoHelper.getMapBounds(evt);
     getCarts({ latitude: currentMapBounds.center.lat, longitude: currentMapBounds.center.lng });
   });
-  
-  win.addEventListener('focus', function(){
-    getCarts({ latitude: currentMapBounds.center.lat, longitude: currentMapBounds.center.lng });
-  });
+  // 
+  // win.addEventListener('focus', function(){
+  //   getCarts({ latitude: currentMapBounds.center.lat, longitude: currentMapBounds.center.lng });
+  // });
   
 });

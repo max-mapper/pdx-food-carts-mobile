@@ -164,8 +164,8 @@ function showForm(data) {
     text:'Menu photo'
   });
   
-  var newButtonOffset = 10;
-  
+  var newButtonOffset = 40;
+  var uploadButtonImage = '../images/upload_new_menu.png';
   if (existingMenu == true) {
     var menuUrl = couchUrl + "/attachment";
 
@@ -176,6 +176,7 @@ function showForm(data) {
   		width: 50
   	});
     
+    uploadButtonImage = '../images/upload_replace_menu.png';
     photoForm.add(menuImage); 
     newButtonOffset = 100;
   }
@@ -194,9 +195,9 @@ function showForm(data) {
     left: 1,
     width: 200,
     height: 42,
-    backgroundImage: '../images/icon_camera.png',
-  	backgroundSelectedImage: '../images/icon_camera.png',
-  	backgroundDisabledImage: '../images/icon_camera.png'
+    backgroundImage: uploadButtonImage,
+  	backgroundSelectedImage: uploadButtonImage,
+  	backgroundDisabledImage: uploadButtonImage
   });
 
   photoAddButton.addEventListener('click', function() {
@@ -206,6 +207,21 @@ function showForm(data) {
   photoForm.add(photoTitleLabel);
   photoButtonBg.add(photoAddButton);
   photoForm.add(photoButtonBg);
+  
+  var ind=Titanium.UI.createProgressBar({
+  	width:200,
+  	height:50,
+  	min:0,
+  	max:1,
+  	value:0,
+  	style:Titanium.UI.iPhone.ProgressBarStyle.PLAIN,
+  	top:100,
+  	message:'Uploading Image',
+  	font:{fontSize:12, fontWeight:'bold'},
+  	color:'#888'
+  });
+
+  photoForm.add(ind);
   
   scrollView.add(photoForm);
 
@@ -261,7 +277,7 @@ function showForm(data) {
 
         currentImageView = Ti.UI.createImageView({
                           top: 1,
-                          left: 1,
+                          left: ((200 - 44)/2),
                           image: event.media,
                           height: 44,
                           width: 44,
@@ -340,12 +356,20 @@ function showForm(data) {
     xhr.onload = function() {
 
       if (currentImageAdded == true) {
+        ind.show();
+        photoButtonBg.hide();
+        
         var newData = JSON.parse(this.responseText);
         var imagexhr = Titanium.Network.createHTTPClient();
 
         imagexhr.onload = function() {
           showSuccess();
         };
+        
+        imagexhr.onsendstream = function(e)
+    		{
+    			ind.value = e.progress;
+    		};
         imagexhr.open('PUT', "http://data.pdxapi.com/food_carts/" + newData.id + "/attachment?rev=" + newData.rev);
         imagexhr.setRequestHeader('Content-Type', 'application/jpeg');
         imagexhr.setRequestHeader('Accept', 'application/jpeg');

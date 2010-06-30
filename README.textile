@@ -1,6 +1,6 @@
-<h1>PDX Food Cart Finder/Editor</h1> ... is a mobile application built using the Titanium framework. This means that the javascript source code found here can be imported into a Titanium Mobile project which can generate either an iPhone or Android native application.
+<h1>PDX Food Cart Finder/Editor</h1> ... is a mobile application built using the Titanium framework and CouchDB. This means that the javascript source code found here can be imported into a Titanium Mobile project which can generate either an iPhone or Android native application that stores all of it's data on a remote CouchDB instance.
 
-The application itself allows the user the find food carts near their current location. If they wish to edit the details of a food cart (location, hours of operation, menu, etc) they can do so from inside the application. All data, including changes made by the user, are stored publicly on PDXAPI. Changes made by any user will show up for all other users, much like a wiki.
+The application itself allows the user the find food carts near their current location. If they wish to edit the details of a food cart (location, hours of operation, menu, etc) they can do so from inside the application. All data, including changes made by the user, are stored publicly on PDXAPI (a GeoCouch instance that I maintain). Changes made by any user will show up for all other users, much like a wiki.
 
 h2. Usage
 
