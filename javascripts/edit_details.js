@@ -6,8 +6,16 @@ var data;
 var editWin = Titanium.UI.currentWindow;
 var existingMenu = editWin.existingMenu;
 var couchUrl = "http://data.pdxapi.com/food_carts/"+editWin.couch_id;
+var cartLocation;
 
-function showSuccess(message) {    
+Titanium.App.addEventListener('locationUpdated', function(newloc) {
+  cartLocation = { 
+    "latitude": newloc.geometry.latitude, 
+    "longitude": newloc.geometry.longitude
+  };
+});
+
+function showSuccess(message) {
   Ti.UI.createAlertDialog({
   	title:'Your changes have been uploaded successfully.',
   	message: message
@@ -22,14 +30,34 @@ function showForm(data) {
     top:0,
     left:0,
     contentWidth:320,
-    contentHeight:710,
+    contentHeight:880,
     height:480,
     width:320,
     verticalBounce: false
   });
+  
+	var editLocationButton = Titanium.UI.createButton({
+  	title:"Edit cart location",
+  	height:40,
+  	width:200,
+  	top:10
+  });
+ 
+  scrollView.add(editLocationButton);
+  
+  editLocationButton.addEventListener('click', function(evt) {
+    var editLocationWin = Titanium.UI.createWindow({
+      url:'edit_location.js',
+      backgroundColor:'#fff',
+      title: "Editing",
+      cartLocation: {latitude:data.geometry.coordinates[1],longitude:data.geometry.coordinates[0],animate:true,latitudeDelta:0.001, longitudeDelta:0.001},
+      couch_id: editWin.couch_id
+    });
+    Titanium.UI.currentTab.open(editLocationWin,{animated:true});
+  });
 
   var nameForm = Ti.UI.createView({
-    top: 10,
+    top: 70,
     left: 10,
     width: 300,
     height: 110,
@@ -68,7 +96,7 @@ function showForm(data) {
   scrollView.add(nameForm);
 
   var descriptionForm = Ti.UI.createView({
-    top: 130,
+    top: 200,
     left: 10,
     width: 300,
     height: 110,
@@ -107,7 +135,7 @@ function showForm(data) {
   scrollView.add(descriptionForm);
 
   var hoursForm = Ti.UI.createView({
-    top: 250,
+    top: 320,
     left: 10,
     width: 300,
     height: 110,
@@ -146,7 +174,7 @@ function showForm(data) {
   scrollView.add(hoursForm);
 
   var photoForm = Ti.UI.createView({
-    top: 370,
+    top: 440,
     left: 10,
     width: 300,
     height: 170,
@@ -222,8 +250,16 @@ function showForm(data) {
   });
 
   photoForm.add(ind);
-  
   scrollView.add(photoForm);
+  
+  var saveButton = Titanium.UI.createButton({
+  	title:"Save cart info",
+  	height:40,
+  	width:200,
+  	top:630
+  });
+  
+  scrollView.add(saveButton);
 
   // Media management
   var currentMedia = false;
@@ -331,30 +367,25 @@ function showForm(data) {
     });
   };
 
-  var saveButton = Titanium.UI.createButton({
-  	systemButton:Titanium.UI.iPhone.SystemButton.SAVE
-  });
-
-	editWin.rightNavButton = saveButton;
-
   saveButton.addEventListener('click', function() {
     var cartData = { "_id"          : data._id,
                      "_rev"         : data._rev,
                      "name"         : nameField.value,
                      "hours"        : hoursField.value,
                      "description"  : descriptionField.value,
-                     "geometry"     : data.geometry
+                     "geometry"     : { "type": "Point", 
+                                        "coordinates": [cartLocation.longitude, cartLocation.latitude]
+                                      }
                    }
-                   
     if (existingMenu == true) {
       cartData._attachments = data._attachments;
     }
 
     var jsonData = JSON.stringify(cartData);
+    
     var xhr = Titanium.Network.createHTTPClient();
 
     xhr.onload = function() {
-
       if (currentImageAdded == true) {
         ind.show();
         photoButtonBg.hide();
@@ -375,7 +406,7 @@ function showForm(data) {
         imagexhr.setRequestHeader('Accept', 'application/jpeg');
         imagexhr.send(currentMedia);
       } else {
-        showSuccess();
+        showSuccess("Please wait a moment for your changes to appear");
       }
     };
 
@@ -391,6 +422,7 @@ function showForm(data) {
 var xhr = Titanium.Network.createHTTPClient();
 xhr.onload = function() {
     data = JSON.parse(this.responseText);
+    cartLocation = data.geometry;
     showForm(data);
 };
 

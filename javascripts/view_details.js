@@ -24,17 +24,27 @@ function showForm(data) {
 		height:'auto',
 		layout:'vertical',
 		left:10,
-		top:10,
+		width: 280,
 		bottom:10,
 		right:10
 	});
+	
+	var editButton = Titanium.UI.createButton({
+  	title:"Edit this cart's info",
+  	height:40,
+  	width:200,
+  	top:10
+  });
+ 
+  textView.add(editButton);
 	
 	textView.addEventListener('click', function(){}); // needed to pass clicks through to items inside view
 
 	var name = Ti.UI.createLabel({
 		text:data.name,
     font:{fontSize:16, fontWeight:'bold'},
-		height:'auto'
+		height:'auto',
+		top: 20
 	});
 	textView.add(name);
 
@@ -82,7 +92,7 @@ function showForm(data) {
 	
 	if (data._attachments != null && data._attachments.attachment.length != 0) {
 	  existingMenu = true;
-    menu.url = couchUrl + "/attachment"
+    menu.url = couchUrl + "/attachment";
     
     menu.addEventListener('click', function()
     { 
@@ -120,12 +130,6 @@ function showForm(data) {
 	rows.push(row);
   tv.setData(rows);
   detailsWin.add(tv);
-
-  var editButton = Titanium.UI.createButton({
-    systemButton:Titanium.UI.iPhone.SystemButton.EDIT,
-  });
- 
-  detailsWin.rightNavButton = editButton;
 
   Titanium.App.addEventListener('detailsSaved', function(e)
   {

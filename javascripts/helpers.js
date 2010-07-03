@@ -33,7 +33,7 @@ var DateHelper = {
 var Enumerable = {
   map: function(array, fn) {
     if (typeof array.map == "function") {
-      return array.map(fn)
+      return array.map(fn);
     } else {
       var r = [];
       var l = array.length;

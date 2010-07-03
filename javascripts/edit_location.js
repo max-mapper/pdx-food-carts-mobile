@@ -12,7 +12,7 @@ function showLocation(location) {
    region:location,
    animate:true,
    regionFit:true,
-   userLocation:true
+   userLocation:false
   });
 
   win.open(mapview);
@@ -48,7 +48,7 @@ function showLocation(location) {
   var view = Ti.UI.createImageView({
    url:'../images/crosshair.png',
    touchEnabled: false,
-   top:130,
+   top:85,
    left:60,
    height:'auto',
    width:'auto'
@@ -57,21 +57,25 @@ function showLocation(location) {
   win.add(view);
   
   var button = Ti.UI.createButton({
-   title:'Save',
+   title:'Done editing location',
    height:40,
    width:200,
    top:20  
- });
- button.addEventListener('click', function() {
-    var xhr = Titanium.Network.createHTTPClient();
-    xhr.onload = function(e)
-   {
-     Ti.UI.createAlertDialog({title:'Saved!', message:'response ' + this.responseText}).show();
-   };
-   xhr.open('PUT','http://data.pdxapi.com/food_carts/ef512bfdc9b17e9827f7275dd05e2195');
-   xhr.setRequestHeader("Content-Type", "application/json");
-   
-   xhr.send(JSON.stringify({_rev: revision, geometry:{ "type": "Point", "coordinates": [annotations[0].longitude, annotations[0].latitude]}}));
- });
+  });
+  
+  win.addEventListener('close', function(){
+    Ti.App.fireEvent('locationUpdated', {"geometry":
+      { "latitude": annotations[0].latitude, 
+        "longitude": annotations[0].longitude
+      }}
+    );
+  });
+  
+  button.addEventListener('click', function() {
+    win.close();
+  });
+  
   win.add(button);
 }
+
+showLocation(win.cartLocation);

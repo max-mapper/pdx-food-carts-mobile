@@ -27,7 +27,9 @@ function getCarts(location) {
 
 function showCarts(carts) {
   function displayAnnotations() {
-    mapview.addAnnotations(annotations);
+    for (var i in annotations) {
+      mapview.addAnnotation(annotations[i]);      
+    }
   }
 
   function hideAnnotations(){
@@ -45,8 +47,9 @@ function showCarts(carts) {
         longitude: carts[i].longitude,
         pincolor: Ti.Map.ANNOTATION_RED,
         title:carts[i].name,
-      	rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE,
+      	rightButton: "../images/details.png",
         animate: false,
+        pinImage: "../images/android-cart.png",
         couch_id: carts[i].id
     });
     annotations = annotations.concat(a);
