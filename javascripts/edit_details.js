@@ -16,19 +16,6 @@ Titanium.App.addEventListener('locationUpdated', function(newloc) {
   };
 });
 
-if (Titanium.Platform.name == 'iPhone OS') {
-  var cancel = Titanium.UI.createButton({
-  	title:'Cancel',
-  	style:Titanium.UI.iPhone.SystemButtonStyle.DONE
-  });
-  cancel.addEventListener('click', function()
-  {
-    editWin.close();
-  });
-
-  editWin.setRightNavButton(cancel);
-}
-
 function showSuccess(message) {
   Ti.UI.createAlertDialog({
     title:'Your changes have been uploaded successfully.',
@@ -76,7 +63,8 @@ function showForm(data) {
       backgroundColor:'#fff',
       title: "Editing",
       cartLocation: {latitude:data.geometry.coordinates[1],longitude:data.geometry.coordinates[0],animate:true,latitudeDelta:0.001, longitudeDelta:0.001},
-      couch_id: editWin.couch_id
+      couch_id: editWin.couch_id,
+      buttonImage: "../images/savebutton.png"
     });
     Titanium.UI.currentTab.open(editLocationWin,{animated:true});
   });

@@ -56,23 +56,25 @@ function showLocation(location) {
   
   win.add(view);
   
-  var button = Ti.UI.createButton({
-    title:'Done editing location',
+  var button = Ti.UI.createImageView({
+    image:win.buttonImage,
     height:40,
-    width:200,
+    width:145,
     top:20  
   });
   
-  win.addEventListener('close', function(){
+  button.addEventListener('click', function() {
     Ti.App.fireEvent('locationUpdated', {"geometry":
       { "latitude": annotations[0].latitude, 
         "longitude": annotations[0].longitude
       }}
     );
-  });
-  
-  button.addEventListener('click', function() {
-    win.close();
+
+    Ti.App.fireEvent('newLocationAdded', {"geometry":
+      { "latitude": annotations[0].latitude, 
+        "longitude": annotations[0].longitude
+      }}
+    );
   });
   
   win.add(button);

@@ -5,6 +5,7 @@ var win = Ti.UI.currentWindow;
 var annotations = [];
 var revision;
 var mapview;
+var usersLocation;
 var currentMapBounds;
 
 var newCartButton = Titanium.UI.createButton({
@@ -12,7 +13,34 @@ var newCartButton = Titanium.UI.createButton({
 });
 
 newCartButton.addEventListener('click', function() {
-  // ...
+  var editLocationWin = Titanium.UI.createWindow({
+    url:'edit_location.js',
+    backgroundColor:'#fff',
+    title: "New Cart Location",
+    cartLocation: usersLocation,
+    buttonImage: "../images/savenewcart.png"
+  });
+  Titanium.UI.currentTab.open(editLocationWin,{animated:true});
+});
+
+Titanium.App.addEventListener('newLocationAdded', function(newloc) {
+  Ti.App.fireEvent('show_indicator');
+  var url = "http://data.pdxapi.com/food_carts/";
+  var cartData = { "geometry"     : { "type": "Point", 
+                                      "coordinates": [newloc.geometry.longitude, newloc.geometry.latitude]
+                                    }
+                 }
+  var jsonData = JSON.stringify(cartData);
+  var xhr = Titanium.Network.createHTTPClient();
+  xhr.onload = function() {
+      Ti.App.fireEvent('hide_indicator',{});
+      var response = JSON.parse(this.responseText);
+      showCarts(carts);
+  };
+  xhr.open("POST", url);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.setRequestHeader('Accept', 'application/json');
+  xhr.send(jsonData);
 });
 
 win.rightNavButton = newCartButton;
@@ -69,13 +97,14 @@ function showCarts(carts) {
   displayAnnotations();
 }
 
+Ti.Geolocation.purpose = "Find nearby Food Carts";
 Titanium.Geolocation.getCurrentPosition(function(e) {
-  var location = {latitude:45.5123668,longitude:-122.6536583,animate:true,latitudeDelta:0.001, longitudeDelta:0.001};
-  // var location = {latitude:e.coords.latitude,longitude:e.coords.longitude,animate:true,latitudeDelta:0.001, longitudeDelta:0.001};
+  usersLocation = {latitude:45.5123668,longitude:-122.6536583,animate:true,latitudeDelta:0.001, longitudeDelta:0.001};
+  // var usersLocation = {latitude:e.coords.latitude,longitude:e.coords.longitude,animate:true,latitudeDelta:0.001, longitudeDelta:0.001};
 
   mapview = Titanium.Map.createView({
   	mapType: Titanium.Map.STANDARD_TYPE,
-  	region:location,
+  	region:usersLocation,
   	animate:true,
   	regionFit:true,
   	userLocation:true
@@ -83,6 +112,7 @@ Titanium.Geolocation.getCurrentPosition(function(e) {
 
   win.open(mapview);
   win.add(mapview);
+  setTimeout(function() { mapview.zoom(1); mapview.zoom(1); },1000);
   
   mapview.addEventListener('click',function(evt) {
   	var annotation = evt.annotation;
