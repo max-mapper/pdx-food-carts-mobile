@@ -9,6 +9,8 @@ h2. Usage
 * Place the files from this git repository into the Resources directory in your new Mobile app
 * use Titanium Developer.app to generate an iPhone/Android app
 
+Note: The included @Design@ folder contains PSDs (Photoshop files) of the design elements in the application and isn't needed to compile the application.
+
 h2. Copyright
 
 Copyright (c) 2010 Max Ogden
