@@ -7,6 +7,17 @@ var revision;
 var mapview;
 var currentMapBounds;
 
+var newCartButton = Titanium.UI.createButton({
+	systemButton:Titanium.UI.iPhone.SystemButton.ADD
+});
+
+newCartButton.addEventListener('click', function() {
+  // ...
+});
+
+win.rightNavButton = newCartButton;
+
+
 function getCarts(location) {
   var one_block = 0.0024;
   var lat = location.latitude;
@@ -26,18 +37,18 @@ function getCarts(location) {
   xhr.send();
 }
 
+function hideAnnotations(){
+  for (var a=annotations.length-1;a>=0;a--) {
+    mapview.removeAnnotation(annotations[a]);
+  }
+  annotations = [];
+}
+
 function showCarts(carts) {
   function displayAnnotations() {
     for (var i in annotations) {
       mapview.addAnnotation(annotations[i]);
     }
-  }
-
-  function hideAnnotations(){
-    for (var a=annotations.length-1;a>=0;a--) {
-      mapview.removeAnnotation(annotations[a]);
-    }
-    annotations = [];
   }
   
   hideAnnotations();

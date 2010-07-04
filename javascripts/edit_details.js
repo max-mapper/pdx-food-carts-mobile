@@ -50,10 +50,9 @@ function showForm(data) {
     verticalBounce: false
   });
   
-  var editLocationButton = Titanium.UI.createButton({
-    title:"Edit cart location",
+  var editLocationButton = Titanium.UI.createImageView({
+    url:"../images/editlocationbutton.png",
     height:40,
-    color: "#000",
     width:145,
     left: 10,
     top:10
@@ -61,11 +60,9 @@ function showForm(data) {
  
   scrollView.add(editLocationButton);
   
-  
-  var saveButton = Titanium.UI.createButton({
-    title:"Save cart info",
+  var saveButton = Titanium.UI.createImageView({
+    url:"../images/savebutton.png",
     height:40,
-    color: "#000",
     width:145,
     right: 10,
     top:10
