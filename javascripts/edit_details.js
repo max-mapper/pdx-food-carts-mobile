@@ -1,7 +1,7 @@
 Titanium.include('../javascripts/application.js');
 Titanium.include('../javascripts/helpers.js');
 var currentImageView;
-var currentImageAdded = true;
+var currentImageAdded = false;
 var data;
 var editWin = Titanium.UI.currentWindow;
 var couchUrl = "http://data.pdxapi.com/food_carts/"+editWin.couch_id;
@@ -38,7 +38,7 @@ function showForm(data) {
   });
   
   var editLocationButton = Titanium.UI.createImageView({
-    url:"../images/editlocationbutton.png",
+    image:"../images/editlocationbutton.png",
     height:40,
     width:145,
     left: 10,
@@ -48,7 +48,7 @@ function showForm(data) {
   scrollView.add(editLocationButton);
   
   var saveButton = Titanium.UI.createImageView({
-    url:"../images/savebutton.png",
+    image:"../images/savebutton.png",
     height:40,
     width:145,
     right: 10,
@@ -64,7 +64,7 @@ function showForm(data) {
       title: "Editing",
       cartLocation: {latitude:data.geometry.coordinates[1],longitude:data.geometry.coordinates[0],animate:true,latitudeDelta:0.001, longitudeDelta:0.001},
       couch_id: editWin.couch_id,
-      buttonImage: "../images/savebutton.png"
+      isNewCart: false
     });
     Titanium.UI.currentTab.open(editLocationWin,{animated:true});
   });
@@ -170,7 +170,7 @@ function showForm(data) {
   });
   
   var menu = Ti.UI.createImageView({
-    url:imageUrl,
+    image:imageUrl,
     top:330,
     height:100
   });
@@ -179,7 +179,7 @@ function showForm(data) {
   
   if (data._attachments != null && data._attachments.attachment.length != 0) {
     existingMenu = true;
-    menu.url = couchUrl + "/attachment";
+    menu.image = couchUrl + "/attachment";
     menu.addEventListener('click', function()
     { 
       var w = Titanium.UI.createWindow({
@@ -268,7 +268,7 @@ function showForm(data) {
         chooseFromGallery();
         break;
       case event.destructive:
-        if(currentImageAdded)  {
+        if(currentImageAdded == true)  {
           photoButtonBg.remove(currentImageView);
           currentImageAdded = false;
           currentMedia = false;
@@ -283,7 +283,7 @@ function showForm(data) {
   chooseMedia.addEventListener('click', chooseMediaSource);
 
   function displayMediaChooser() {
-    if(currentImageAdded) {
+    if(currentImageAdded == true) {
       chooseMedia.options = ['New Photo', 'Choose Existing', 'Remove Existing', 'Cancel'];
       chooseMedia.destructive = 2;  
       chooseMedia.cancel = 3;
@@ -301,7 +301,7 @@ function showForm(data) {
         var cropRect = event.cropRect;
         currentMedia = event.media;
 
-        if(currentImageAdded)  {
+        if(currentImageAdded == true)  {
           scrollView.remove(menu);
           currentImageAdded = false;
         }
@@ -338,7 +338,7 @@ function showForm(data) {
         var cropRect = event.cropRect;
         currentMedia = event.media;
 
-        if(currentImageAdded)  {
+        if(currentImageAdded == true)  {
           scrollView.remove(menu);
           currentImageAdded = false;
         }
@@ -368,6 +368,7 @@ function showForm(data) {
                                         "coordinates": [cartLocation.longitude, cartLocation.latitude]
                                       }
                    }
+
     if (existingMenu == true) {
       cartData._attachments = data._attachments;
     }
@@ -385,7 +386,7 @@ function showForm(data) {
         
               imagexhr.onload = function() {
                 Ti.App.fireEvent('hide_indicator',{});
-                showSuccess();
+                showSuccess("Please allow a moment or two for your updates to become available");
               };
               
               imagexhr.onsendstream = function(e)
@@ -398,7 +399,8 @@ function showForm(data) {
               imagexhr.setRequestHeader('Accept', 'application/jpeg');
               imagexhr.send(currentMedia);
             } else {
-              showSuccess(JSON.parse(this.responseText));
+              Ti.App.fireEvent('hide_indicator',{});
+              showSuccess("Please allow a moment or two for your updates to become available");
             }
           };
         
@@ -406,7 +408,6 @@ function showForm(data) {
           xhr.setRequestHeader('Content-Type', 'application/json');
           xhr.setRequestHeader('Accept', 'application/json');
           xhr.send(jsonData);
-  
   });
   editWin.add(scrollView);
 }
@@ -414,7 +415,10 @@ function showForm(data) {
 var xhr = Titanium.Network.createHTTPClient();
 xhr.onload = function() {
     data = JSON.parse(this.responseText);
-    cartLocation = data.geometry;
+    cartLocation = {
+      "latitude": data.geometry.coordinates[1], 
+      "longitude": data.geometry.coordinates[0]
+    };
     showForm(data);
 };
 

@@ -4,6 +4,7 @@ Titanium.include('../javascripts/helpers.js');
 var win = Titanium.UI.currentWindow;
 var annotations = [];
 var revision;
+var isNewCart = win.isNewCart;
 
 function showLocation(location) {
   
@@ -46,7 +47,7 @@ function showLocation(location) {
   });
   
   var view = Ti.UI.createImageView({
-    url:'../images/crosshair.png',
+    image:'../images/crosshair.png',
     touchEnabled: false,
     top:85,
     left:60,
@@ -56,28 +57,43 @@ function showLocation(location) {
   
   win.add(view);
   
-  var button = Ti.UI.createImageView({
-    image:win.buttonImage,
-    height:40,
-    width:145,
-    top:20  
-  });
-  
-  button.addEventListener('click', function() {
-    Ti.App.fireEvent('locationUpdated', {"geometry":
-      { "latitude": annotations[0].latitude, 
-        "longitude": annotations[0].longitude
-      }}
-    );
-
-    Ti.App.fireEvent('newLocationAdded', {"geometry":
-      { "latitude": annotations[0].latitude, 
-        "longitude": annotations[0].longitude
-      }}
-    );
-  });
-  
-  win.add(button);
+  if (isNewCart == true) {
+    var saveNewButton = Ti.UI.createImageView({
+      image: "../images/savenewcart.png",
+      height:40,
+      width:145,
+      top:20  
+    });
+    
+    saveNewButton.addEventListener('click', function() {
+      Ti.App.fireEvent('newLocationAdded', {"geometry":
+        { "latitude": annotations[0].latitude, 
+          "longitude": annotations[0].longitude
+        }}
+      );
+      win.close();
+    });
+    
+    win.add(saveNewButton);
+  } else {
+    var saveExistingbutton = Ti.UI.createImageView({
+      image: "../images/savebutton.png",
+      height:40,
+      width:145,
+      top:20  
+    });
+    
+    saveExistingbutton.addEventListener('click', function() {
+      Ti.App.fireEvent('locationUpdated', {"geometry":
+        { "latitude": annotations[0].latitude, 
+          "longitude": annotations[0].longitude
+        }}
+      );
+      win.close();
+    });
+    
+    win.add(saveExistingbutton);
+  }
 }
 
 showLocation(win.cartLocation);

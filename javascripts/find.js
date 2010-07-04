@@ -7,6 +7,7 @@ var revision;
 var mapview;
 var usersLocation;
 var currentMapBounds;
+var jsonResponse;
 
 var newCartButton = Titanium.UI.createButton({
 	systemButton:Titanium.UI.iPhone.SystemButton.ADD
@@ -18,7 +19,7 @@ newCartButton.addEventListener('click', function() {
     backgroundColor:'#fff',
     title: "New Cart Location",
     cartLocation: usersLocation,
-    buttonImage: "../images/savenewcart.png"
+    isNewCart: true
   });
   Titanium.UI.currentTab.open(editLocationWin,{animated:true});
 });
@@ -33,9 +34,18 @@ Titanium.App.addEventListener('newLocationAdded', function(newloc) {
   var jsonData = JSON.stringify(cartData);
   var xhr = Titanium.Network.createHTTPClient();
   xhr.onload = function() {
-      Ti.App.fireEvent('hide_indicator',{});
-      var response = JSON.parse(this.responseText);
-      showCarts(carts);
+      jsonResponse = this.responseText;
+      setTimeout(function() {
+        Ti.App.fireEvent('hide_indicator',{});
+        var response = JSON.parse(jsonResponse);
+    	  var win = Titanium.UI.createWindow({
+      		url:'edit_details.js',
+      		backgroundColor:'#fff',
+      		title: "New Cart Details",
+      		couch_id: response.id
+      	});
+        Titanium.UI.currentTab.open(win,{animated:true});
+      },1000);
   };
   xhr.open("POST", url);
   xhr.setRequestHeader('Content-Type', 'application/json');
