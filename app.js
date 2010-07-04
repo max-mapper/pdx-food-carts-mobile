@@ -26,7 +26,7 @@ var findTab = Titanium.UI.createTab({
 
 var listWin = Titanium.UI.createWindow({  
   url:'javascripts/list.js',
-  title:'Carts near you',
+  title:'Carts Near You',
   barColor:"#333",
   backgroundColor:'#5a5c64',
   currentCarts: currentCarts
