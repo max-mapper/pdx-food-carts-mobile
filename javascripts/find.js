@@ -1,6 +1,6 @@
 Titanium.include('../javascripts/application.js');
 Titanium.include('../javascripts/helpers.js');
-
+Ti.App.fireEvent('show_indicator');
 var win = Ti.UI.currentWindow;
 var annotations = [];
 var revision;
@@ -14,6 +14,7 @@ function getCarts(location) {
   var url = "http://data.pdxapi.com/food_carts/_design/names/_spatial/points?bbox="+ (lon - one_block) + "," + (lat - one_block) + "," + (lon + one_block) + "," + (lat + one_block);
   var xhr = Titanium.Network.createHTTPClient();
   xhr.onload = function() {
+      Ti.App.fireEvent('hide_indicator',{});
       var response = JSON.parse(this.responseText).spatial;
       var carts = Enumerable.map(response, function(cart){
         return {latitude: cart.bbox[1], longitude: cart.bbox[0], id:cart.id, name:cart.value.name};
@@ -90,12 +91,8 @@ Titanium.Geolocation.getCurrentPosition(function(e) {
   });
 
   mapview.addEventListener('regionChanged',function(evt){
+    Ti.App.fireEvent('hide_indicator',{});
     currentMapBounds = GeoHelper.getMapBounds(evt);
     getCarts({ latitude: currentMapBounds.center.lat, longitude: currentMapBounds.center.lng });
   });
-  // 
-  // win.addEventListener('focus', function(){
-  //   getCarts({ latitude: currentMapBounds.center.lat, longitude: currentMapBounds.center.lng });
-  // });
-  
 });

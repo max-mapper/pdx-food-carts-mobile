@@ -312,13 +312,13 @@ function showForm(data) {
         }
 
         currentImageView = Ti.UI.createImageView({
-                          top: 1,
-                          left: ((200 - 44)/2),
-                          image: event.media,
-                          height: 44,
-                          width: 44,
-                          borderRadius: 2
-                        });
+                             top: 1,
+                             left: ((200 - 44)/2),
+                             image: event.media,
+                             height: 44,
+                             width: 44,
+                             borderRadius: 2
+                           });
 
         currentImageView.addEventListener('click', function(event) {
           displayMediaChooser();
@@ -352,7 +352,7 @@ function showForm(data) {
         currentImageView = Ti.UI.createImageView({
                           top: 1,
                           left: ((200 - 44)/2),
-                          image: event.media,
+                          image: currentMedia,
                           height: 44,
                           width: 44,
                           borderRadius: 2
@@ -368,6 +368,7 @@ function showForm(data) {
   };
 
   saveButton.addEventListener('click', function() {
+    Ti.App.fireEvent('show_indicator');
     var cartData = { "_id"          : data._id,
                      "_rev"         : data._rev,
                      "name"         : nameField.value,
@@ -394,19 +395,21 @@ function showForm(data) {
         var imagexhr = Titanium.Network.createHTTPClient();
 
         imagexhr.onload = function() {
+          Ti.App.fireEvent('hide_indicator',{});
           showSuccess();
         };
         
         imagexhr.onsendstream = function(e)
     		{
     			ind.value = e.progress;
+    			Ti.App.fireEvent('change_title', { title: 'Submitting' });
     		};
         imagexhr.open('PUT', "http://data.pdxapi.com/food_carts/" + newData.id + "/attachment?rev=" + newData.rev);
         imagexhr.setRequestHeader('Content-Type', 'application/jpeg');
         imagexhr.setRequestHeader('Accept', 'application/jpeg');
         imagexhr.send(currentMedia);
       } else {
-        showSuccess("Please wait a moment for your changes to appear");
+        showSuccess(JSON.parse(this.responseText));
       }
     };
 

@@ -85,7 +85,7 @@ function showForm(data) {
 	textView.add(menuTitle);
 
 	var menu = Ti.UI.createImageView({
-		url:imageUrl,
+		image:imageUrl,
 		top:10,
 		height:'auto'
 	});

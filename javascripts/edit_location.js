@@ -8,11 +8,11 @@ var revision;
 function showLocation(location) {
   
   var mapview = Titanium.Map.createView({
-   mapType: Titanium.Map.STANDARD_TYPE,
-   region:location,
-   animate:true,
-   regionFit:true,
-   userLocation:false
+    mapType: Titanium.Map.STANDARD_TYPE,
+    region:location,
+    animate:true,
+    regionFit:true,
+    userLocation:false
   });
 
   win.open(mapview);
@@ -25,7 +25,7 @@ function showLocation(location) {
     }
 
     function hideAnnotations(){
-      for (var a=annotations.length-1;a>=0;a--) {
+      for (var a = annotations.length - 1; a >= 0; a--) {
         mapview.removeAnnotation(annotations[a]);
       }
       annotations = [];
@@ -35,10 +35,10 @@ function showLocation(location) {
 
     hideAnnotations();
     var a = Ti.Map.createAnnotation({
-        latitude: bounds.center.lat,
-        longitude: bounds.center.lng,
-        pincolor: Ti.Map.ANNOTATION_RED,
-        animate: false
+      latitude: bounds.center.lat,
+      longitude: bounds.center.lng,
+      pincolor: Ti.Map.ANNOTATION_RED,
+      animate: false
     });
     
     annotations = annotations.concat(a);
@@ -46,21 +46,21 @@ function showLocation(location) {
   });
   
   var view = Ti.UI.createImageView({
-   url:'../images/crosshair.png',
-   touchEnabled: false,
-   top:85,
-   left:60,
-   height:'auto',
-   width:'auto'
+    url:'../images/crosshair.png',
+    touchEnabled: false,
+    top:85,
+    left:60,
+    height:'auto',
+    width:'auto'
   });
-
+  
   win.add(view);
   
   var button = Ti.UI.createButton({
-   title:'Done editing location',
-   height:40,
-   width:200,
-   top:20  
+    title:'Done editing location',
+    height:40,
+    width:200,
+    top:20  
   });
   
   win.addEventListener('close', function(){
