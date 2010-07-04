@@ -12,3 +12,9 @@ h2. Usage
 h2. Copyright
 
 Copyright (c) 2010 Max Ogden
+
+h2. Contributors
+
+* Max Ogden (@maxogden)
+* Don Park (@donpdonp)
+* Clifton B (Graphic/Interaction Design) (@maxticket)
