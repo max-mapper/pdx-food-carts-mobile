@@ -1,24 +1,38 @@
 Titanium.include('../javascripts/application.js');
 Titanium.include('../javascripts/helpers.js');
 var currentImageView;
-var currentImageAdded = false;
+var currentImageAdded = true;
 var data;
 var editWin = Titanium.UI.currentWindow;
-var existingMenu = editWin.existingMenu;
 var couchUrl = "http://data.pdxapi.com/food_carts/"+editWin.couch_id;
 var cartLocation;
+var imageUrl = "../images/no_menu.png";
+var existingMenu = false;
 
 Titanium.App.addEventListener('locationUpdated', function(newloc) {
-  cartLocation = { 
+  cartLocation = {
     "latitude": newloc.geometry.latitude, 
     "longitude": newloc.geometry.longitude
   };
 });
 
+if (Titanium.Platform.name == 'iPhone OS') {
+  var cancel = Titanium.UI.createButton({
+  	title:'Cancel',
+  	style:Titanium.UI.iPhone.SystemButtonStyle.DONE
+  });
+  cancel.addEventListener('click', function()
+  {
+    editWin.close();
+  });
+
+  editWin.setRightNavButton(cancel);
+}
+
 function showSuccess(message) {
   Ti.UI.createAlertDialog({
-  	title:'Your changes have been uploaded successfully.',
-  	message: message
+    title:'Your changes have been uploaded successfully.',
+    message: message
   }).show();
   editWin.close();
   Titanium.App.fireEvent('detailsSaved');
@@ -30,20 +44,34 @@ function showForm(data) {
     top:0,
     left:0,
     contentWidth:320,
-    contentHeight:880,
+    contentHeight:600,
     height:480,
     width:320,
     verticalBounce: false
   });
   
-	var editLocationButton = Titanium.UI.createButton({
-  	title:"Edit cart location",
-  	height:40,
-  	width:200,
-  	top:10
+  var editLocationButton = Titanium.UI.createButton({
+    title:"Edit cart location",
+    height:40,
+    color: "#000",
+    width:145,
+    left: 10,
+    top:10
   });
  
   scrollView.add(editLocationButton);
+  
+  
+  var saveButton = Titanium.UI.createButton({
+    title:"Save cart info",
+    height:40,
+    color: "#000",
+    width:145,
+    right: 10,
+    top:10
+  });
+  
+  scrollView.add(saveButton);
   
   editLocationButton.addEventListener('click', function(evt) {
     var editLocationWin = Titanium.UI.createWindow({
@@ -56,165 +84,153 @@ function showForm(data) {
     Titanium.UI.currentTab.open(editLocationWin,{animated:true});
   });
 
-  var nameForm = Ti.UI.createView({
-    top: 70,
-    left: 10,
-    width: 300,
-    height: 110,
-    backgroundColor:'#333',
-    borderRadius:6
-  });
-
   var nameTitleLabel = Ti.UI.createLabel({
-    top: 5,
+    top: 60,
     left: 10,
     width: 300,
-    height: 30,
-    color: '#fff',
-  	font:{fontSize:18, fontWeight:'bold'},
+    height: 15,
+    color: '#000',
+    font:{fontSize:12},
     text:'Cart Name'
   });
-  nameForm.add(nameTitleLabel);
+  scrollView.add(nameTitleLabel);
 
-  var nameField = Titanium.UI.createTextArea({
-  	value:data.name,
-  	height:70,
-  	width:300,
-  	top:40,
-  	font:{fontSize:20, fontWeight:'bold'},
-  	textAlign:'left',
-  	borderWidth:2,
-  	borderColor:'#bbb',
-  	borderRadius:5,
-  	suppressReturn:true
+  var nameField = Titanium.UI.createTextField({
+    value:data.name,
+    height:40,
+    width:300,
+    left: 10,
+    top:80,
+    font:{fontSize:16},
+    borderWidth:2,
+    borderColor:'#bbb',
+    borderRadius:5,
+    suppressReturn:true,
+    keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+  	returnKeyType:Titanium.UI.RETURNKEY_DEFAULT,
+  	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
   });
-  nameForm.add(nameField);
+  scrollView.add(nameField);
   nameField.addEventListener("return",function(e){
     nameField.blur();
   });
-  nameForm.add(nameField);
-  scrollView.add(nameForm);
-
-  var descriptionForm = Ti.UI.createView({
-    top: 200,
-    left: 10,
-    width: 300,
-    height: 110,
-    backgroundColor:'#333',
-    borderRadius:6
-  });
 
   var descriptionTitleLabel = Ti.UI.createLabel({
-    top: 5,
+    top: 130,
     left: 10,
     width: 300,
-    height: 30,
-    color: '#fff',
-  	font:{fontSize:18, fontWeight:'bold'},
-    text:'Description'
+    height: 15,
+    color: '#000',
+    font:{fontSize:12},
+    text:'Food Description'
   });
-  descriptionForm.add(descriptionTitleLabel);
+  scrollView.add(descriptionTitleLabel);
 
   var descriptionField = Titanium.UI.createTextArea({
-  	value:data.description,
-  	height:70,
-  	width:300,
-  	top:40,
-  	font:{fontSize:12},
-  	textAlign:'left',
-  	borderWidth:2,
-  	borderColor:'#bbb',
-  	borderRadius:5,
-  	suppressReturn:true
+    value:data.description,
+    height:80,
+    width:300,
+    top:150,
+    font:{fontSize:12},
+    textAlign:'left',
+    borderWidth:2,
+    borderColor:'#bbb',
+    borderRadius:5,
+    suppressReturn:true
   });
-  descriptionForm.add(descriptionField);
+  scrollView.add(descriptionField);
   descriptionField.addEventListener("return",function(e){
     descriptionField.blur();
   });
-  descriptionForm.add(descriptionField);
-  scrollView.add(descriptionForm);
-
-  var hoursForm = Ti.UI.createView({
-    top: 320,
-    left: 10,
-    width: 300,
-    height: 110,
-    backgroundColor:'#333',
-    borderRadius:6
-  });
 
   var hoursTitleLabel = Ti.UI.createLabel({
-    top: 5,
+    top: 240,
     left: 10,
     width: 300,
-    height: 30,
-    color: '#fff',
-  	font:{fontSize:18, fontWeight:'bold'},
+    height: 15,
+    color: '#000',
+    font:{fontSize:12},
     text:'Hours'
   });
-  hoursForm.add(hoursTitleLabel);
+  scrollView.add(hoursTitleLabel);
 
-  var hoursField = Titanium.UI.createTextArea({
-  	value:data.hours,
-  	height:70,
-  	width:300,
-  	top:40,
-  	font:{fontSize:12},
-  	textAlign:'left',
-  	borderWidth:2,
-  	borderColor:'#bbb',
-  	borderRadius:5,
-  	suppressReturn:true
+  var hoursField = Titanium.UI.createTextField({
+    value:data.hours,
+    height:40,
+    width:300,
+    top:260,
+    left: 10,
+    font:{fontSize:16},
+    borderWidth:2,
+    borderColor:'#bbb',
+    borderRadius:5,
+    suppressReturn:true,
+    keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+  	returnKeyType:Titanium.UI.RETURNKEY_DEFAULT,
+  	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
   });
-  hoursForm.add(hoursField);
+  scrollView.add(hoursField);
   hoursField.addEventListener("return",function(e){
     hoursField.blur();
   });
-  hoursForm.add(hoursField);
-  scrollView.add(hoursForm);
-
-  var photoForm = Ti.UI.createView({
-    top: 440,
-    left: 10,
-    width: 300,
-    height: 170,
-    backgroundColor:'#333',
-    borderRadius:6
-  });
 
   var photoTitleLabel = Ti.UI.createLabel({
-    top: 5,
+    top: 310,
     left: 10,
     width: 300,
-    height: 30,
-    color: '#fff',
-    font:{fontSize:18, fontWeight:'bold'},
-    text:'Menu photo'
+    height: 15,
+    color: '#000',
+    font:{fontSize:12},
+    text:'Menu Photo'
   });
   
-  var newButtonOffset = 40;
+  var menu = Ti.UI.createImageView({
+    url:imageUrl,
+    top:330,
+    height:100
+  });
+  
   var uploadButtonImage = '../images/upload_new_menu.png';
-  if (existingMenu == true) {
-    var menuUrl = couchUrl + "/attachment";
+  
+  if (data._attachments != null && data._attachments.attachment.length != 0) {
+    existingMenu = true;
+    menu.url = couchUrl + "/attachment";
+    menu.addEventListener('click', function()
+    { 
+      var w = Titanium.UI.createWindow({
+        backgroundColor: '#336699',
+        scale: true
+      });
 
-  	var menuImage = Ti.UI.createImageView({
-  		url:menuUrl,
-  		top:40,
-  		height:50,
-  		width: 50
-  	});
-    
-    uploadButtonImage = '../images/upload_replace_menu.png';
-    photoForm.add(menuImage); 
-    newButtonOffset = 100;
+      var close = Titanium.UI.createButton({
+        title:'Close',
+        top: 5,
+        height: 40,
+        width: 200
+      });
+
+      w.add(close);
+
+      close.addEventListener('click', function()
+      {
+        w.close();
+      });
+
+      var wv = Ti.UI.createWebView({
+        top: 50,
+        url:"http://pdxapi.com/image/food_carts/" + editWin.couch_id
+      });
+
+      w.add(wv);
+      w.open();
+    });
   }
-
+  
   var photoButtonBg = Ti.UI.createView({
-    top: newButtonOffset,
-    left: ((photoForm.width - 200)/2),
+    top: 440,
+    left: ((scrollView.width - 200)/2),
     width: 200,
     height: 42,
-    backgroundColor: '#000',
     borderRadius: 5
   });
 
@@ -223,43 +239,37 @@ function showForm(data) {
     left: 1,
     width: 200,
     height: 42,
+    borderWidth:2,
+    borderColor:'#bbb',
+    borderRadius:5,
     backgroundImage: uploadButtonImage,
-  	backgroundSelectedImage: uploadButtonImage,
-  	backgroundDisabledImage: uploadButtonImage
+    backgroundSelectedImage: uploadButtonImage,
+    backgroundDisabledImage: uploadButtonImage
   });
 
   photoAddButton.addEventListener('click', function() {
     displayMediaChooser();
   });
 
-  photoForm.add(photoTitleLabel);
+  scrollView.add(photoTitleLabel);
+  scrollView.add(menu);
   photoButtonBg.add(photoAddButton);
-  photoForm.add(photoButtonBg);
+  scrollView.add(photoButtonBg);
   
   var ind=Titanium.UI.createProgressBar({
-  	width:200,
-  	height:50,
-  	min:0,
-  	max:1,
-  	value:0,
-  	style:Titanium.UI.iPhone.ProgressBarStyle.PLAIN,
-  	top:100,
-  	message:'Uploading Image',
-  	font:{fontSize:12, fontWeight:'bold'},
-  	color:'#888'
+    width:200,
+    height:50,
+    min:0,
+    max:1,
+    value:0,
+    style:Titanium.UI.iPhone.ProgressBarStyle.PLAIN,
+    top:490,
+    message:'Uploading Image',
+    font:{fontSize:12, fontWeight:'bold'},
+    color:'#888'
   });
 
-  photoForm.add(ind);
-  scrollView.add(photoForm);
-  
-  var saveButton = Titanium.UI.createButton({
-  	title:"Save cart info",
-  	height:40,
-  	width:200,
-  	top:630
-  });
-  
-  scrollView.add(saveButton);
+  scrollView.add(ind);
 
   // Media management
   var currentMedia = false;
@@ -307,33 +317,32 @@ function showForm(data) {
         currentMedia = event.media;
 
         if(currentImageAdded)  {
-          photoButtonBg.remove(currentImageView);
+          scrollView.remove(menu);
           currentImageAdded = false;
         }
 
         currentImageView = Ti.UI.createImageView({
-                             top: 1,
+                             top: 330,
                              left: ((200 - 44)/2),
                              image: event.media,
-                             height: 44,
-                             width: 44,
+                             height: 100,
                              borderRadius: 2
                            });
 
         currentImageView.addEventListener('click', function(event) {
           displayMediaChooser();
         });
-        photoButtonBg.add(currentImageView);
+        scrollView.add(currentImageView);
         currentImageAdded = true;
       },
-  		error:function(error) {
-  			Ti.UI.createAlertDialog({
-  			  title:'Sorry',
-  			  message:'This device either cannot take photos or there was a problem saving this photo.'
-  			}).show();
-  		},
-  		allowImageEditing:true,
-  		saveToPhotoGallery:true
+      error:function(error) {
+        Ti.UI.createAlertDialog({
+          title:'Sorry',
+          message:'This device either cannot take photos or there was a problem saving this photo.'
+        }).show();
+      },
+      allowImageEditing:true,
+      saveToPhotoGallery:true
     });
   }
 
@@ -345,23 +354,19 @@ function showForm(data) {
         currentMedia = event.media;
 
         if(currentImageAdded)  {
-          photoButtonBg.remove(currentImageView);
+          scrollView.remove(menu);
           currentImageAdded = false;
         }
 
         currentImageView = Ti.UI.createImageView({
-                          top: 1,
-                          left: ((200 - 44)/2),
-                          image: currentMedia,
-                          height: 44,
-                          width: 44,
-                          borderRadius: 2
-                        });
+                             top: 330,
+                             image: event.media
+                           });
 
         currentImageView.addEventListener('click', function(event) {
           displayMediaChooser();
         });
-        photoButtonBg.add(currentImageView);
+        scrollView.add(currentImageView);
         currentImageAdded = true;
       }
     });
@@ -381,43 +386,42 @@ function showForm(data) {
     if (existingMenu == true) {
       cartData._attachments = data._attachments;
     }
-
     var jsonData = JSON.stringify(cartData);
-    
-    var xhr = Titanium.Network.createHTTPClient();
-
-    xhr.onload = function() {
-      if (currentImageAdded == true) {
-        ind.show();
-        photoButtonBg.hide();
+          
+          var xhr = Titanium.Network.createHTTPClient();
         
-        var newData = JSON.parse(this.responseText);
-        var imagexhr = Titanium.Network.createHTTPClient();
-
-        imagexhr.onload = function() {
-          Ti.App.fireEvent('hide_indicator',{});
-          showSuccess();
-        };
+          xhr.onload = function() {
+            if (currentImageAdded == true) {
+              ind.show();
+              photoButtonBg.hide();
+              
+              var newData = JSON.parse(this.responseText);
+              var imagexhr = Titanium.Network.createHTTPClient();
         
-        imagexhr.onsendstream = function(e)
-    		{
-    			ind.value = e.progress;
-    			Ti.App.fireEvent('change_title', { title: 'Submitting' });
-    		};
-        imagexhr.open('PUT', "http://data.pdxapi.com/food_carts/" + newData.id + "/attachment?rev=" + newData.rev);
-        imagexhr.setRequestHeader('Content-Type', 'application/jpeg');
-        imagexhr.setRequestHeader('Accept', 'application/jpeg');
-        imagexhr.send(currentMedia);
-      } else {
-        showSuccess(JSON.parse(this.responseText));
-      }
-    };
-
-    xhr.open('PUT', "http://data.pdxapi.com/food_carts/" + data._id);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.setRequestHeader('Accept', 'application/json');
-    xhr.send(jsonData);
-
+              imagexhr.onload = function() {
+                Ti.App.fireEvent('hide_indicator',{});
+                showSuccess();
+              };
+              
+              imagexhr.onsendstream = function(e)
+              {
+                ind.value = e.progress;
+                Ti.App.fireEvent('change_title', { title: 'Submitting' });
+              };
+              imagexhr.open('PUT', "http://data.pdxapi.com/food_carts/" + newData.id + "/attachment?rev=" + newData.rev);
+              imagexhr.setRequestHeader('Content-Type', 'application/jpeg');
+              imagexhr.setRequestHeader('Accept', 'application/jpeg');
+              imagexhr.send(currentMedia);
+            } else {
+              showSuccess(JSON.parse(this.responseText));
+            }
+          };
+        
+          xhr.open('PUT', "http://data.pdxapi.com/food_carts/" + data._id);
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.setRequestHeader('Accept', 'application/json');
+          xhr.send(jsonData);
+  
   });
   editWin.add(scrollView);
 }

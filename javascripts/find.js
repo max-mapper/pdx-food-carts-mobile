@@ -29,7 +29,7 @@ function getCarts(location) {
 function showCarts(carts) {
   function displayAnnotations() {
     for (var i in annotations) {
-      mapview.addAnnotation(annotations[i]);      
+      mapview.addAnnotation(annotations[i]);
     }
   }
 
@@ -81,12 +81,12 @@ Titanium.Geolocation.getCurrentPosition(function(e) {
 
   	if (evt.clicksource == 'rightButton') {
   	  var win = Titanium.UI.createWindow({
-    		url:'view_details.js',
+    		url:'edit_details.js',
     		backgroundColor:'#fff',
     		title: title,
     		couch_id: couch_id
     	});
-    	Titanium.UI.currentTab.open(win,{animated:true});
+      Titanium.UI.currentTab.open(win,{animated:true});
   	}
   });
 
