@@ -49,7 +49,6 @@ var indWin = null;
 var actInd = null;
 function showIndicator(title) {
 	indicatorShowing = true;
-  Ti.API.info("showIndicator with title " + title);
 	
   	// window container
   	indWin = Titanium.UI.createWindow({

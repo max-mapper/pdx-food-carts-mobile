@@ -71,3 +71,36 @@ var GeoHelper = {
   }
 }
 
+var DebugHelper = {
+  dumpObject: function(thisControl) {
+      // Do we want funcs to be included?
+      var incFuncs = true;
+      // thisControl is the item you wish to debug
+      for(p in thisControl) {
+          // Define a default type
+          var typeName = "property";
+          try {
+              // Grab a handle to allow us to check
+              var typeHandle = thisControl[p];
+              if (typeof typeHandle == "function") {
+                  // We have a function
+                  if (!incFuncs) {
+                      // Ignore it
+                      continue;
+                  }
+                  typeName = "function";
+              }
+          } catch (e) {
+              // Oops - we have a problem - not an issue
+              Ti.API.info("Exception with "+p);
+          }
+          // Basic info
+          Ti.API.info("["+typeName+"] "+p);
+          if (typeName != "function") {
+              // Only display the contents of properties or array elements
+              Ti.API.info("Value: "+thisControl[p]);
+          }
+      }
+  }
+}
+

@@ -8,6 +8,8 @@ var couchUrl = "http://data.pdxapi.com/food_carts/"+editWin.couch_id;
 var cartLocation;
 var imageUrl = "../images/no_menu.png";
 var existingMenu = false;
+var currentMedia = false;
+
 
 Titanium.App.addEventListener('locationUpdated', function(newloc) {
   cartLocation = {
@@ -177,9 +179,9 @@ function showForm(data) {
   
   var uploadButtonImage = '../images/upload_new_menu.png';
   
-  if (data._attachments != null && data._attachments.attachment.length != 0) {
+  if (data._attachments != null && data._attachments.menuphoto.length != 0) {
     existingMenu = true;
-    menu.image = couchUrl + "/attachment";
+    menu.image = couchUrl + "/menuphoto";
     menu.addEventListener('click', function()
     { 
       var w = Titanium.UI.createWindow({
@@ -240,24 +242,6 @@ function showForm(data) {
   scrollView.add(menu);
   photoButtonBg.add(photoAddButton);
   scrollView.add(photoButtonBg);
-  
-  var ind=Titanium.UI.createProgressBar({
-    width:200,
-    height:50,
-    min:0,
-    max:1,
-    value:0,
-    style:Titanium.UI.iPhone.ProgressBarStyle.PLAIN,
-    top:490,
-    message:'Uploading Image',
-    font:{fontSize:12, fontWeight:'bold'},
-    color:'#888'
-  });
-
-  scrollView.add(ind);
-
-  // Media management
-  var currentMedia = false;
 
   var chooseMediaSource = function(event) {
     switch(event.index) {
@@ -269,7 +253,6 @@ function showForm(data) {
         break;
       case event.destructive:
         if(currentImageAdded == true)  {
-          photoButtonBg.remove(currentImageView);
           currentImageAdded = false;
           currentMedia = false;
         }
@@ -298,26 +281,8 @@ function showForm(data) {
     Ti.Media.showCamera({
       mediaTypes: [Ti.Media.MEDIA_TYPE_PHOTO],
       success: function(event) {
-        var cropRect = event.cropRect;
+        Ti.API.info("success! event: " + JSON.stringify(event));
         currentMedia = event.media;
-
-        if(currentImageAdded == true)  {
-          scrollView.remove(menu);
-          currentImageAdded = false;
-        }
-
-        currentImageView = Ti.UI.createImageView({
-                             top: 330,
-                             left: ((200 - 44)/2),
-                             image: event.media,
-                             height: 100,
-                             borderRadius: 2
-                           });
-
-        currentImageView.addEventListener('click', function(event) {
-          displayMediaChooser();
-        });
-        scrollView.add(currentImageView);
         currentImageAdded = true;
       },
       error:function(error) {
@@ -332,26 +297,10 @@ function showForm(data) {
   }
 
   function chooseFromGallery() {
-    Ti.Media.openPhotoGallery({
-      mediaTypes: [Ti.Media.MEDIA_TYPE_PHOTO],
+    Titanium.Media.openPhotoGallery({
       success: function(event) {
-        var cropRect = event.cropRect;
-        currentMedia = event.media;
-
-        if(currentImageAdded == true)  {
-          scrollView.remove(menu);
-          currentImageAdded = false;
-        }
-
-        currentImageView = Ti.UI.createImageView({
-                             top: 330,
-                             image: event.media
-                           });
-
-        currentImageView.addEventListener('click', function(event) {
-          displayMediaChooser();
-        });
-        scrollView.add(currentImageView);
+        Ti.API.info("success! event: " + JSON.stringify(event));
+    		currentMedia = event.media;
         currentImageAdded = true;
       }
     });
@@ -368,7 +317,6 @@ function showForm(data) {
                                         "coordinates": [cartLocation.longitude, cartLocation.latitude]
                                       }
                    }
-
     if (existingMenu == true) {
       cartData._attachments = data._attachments;
     }
@@ -377,10 +325,7 @@ function showForm(data) {
           var xhr = Titanium.Network.createHTTPClient();
         
           xhr.onload = function() {
-            if (currentImageAdded == true) {
-              ind.show();
-              photoButtonBg.hide();
-              
+            if (currentImageAdded == true) {              
               var newData = JSON.parse(this.responseText);
               var imagexhr = Titanium.Network.createHTTPClient();
         
@@ -389,14 +334,10 @@ function showForm(data) {
                 showSuccess("Please allow a moment or two for your updates to become available");
               };
               
-              imagexhr.onsendstream = function(e)
-              {
-                ind.value = e.progress;
-                Ti.App.fireEvent('change_title', { title: 'Submitting' });
-              };
-              imagexhr.open('PUT', "http://data.pdxapi.com/food_carts/" + newData.id + "/attachment?rev=" + newData.rev);
+              imagexhr.open('PUT', "http://data.pdxapi.com/food_carts/" + newData.id + "/menuphoto?rev=" + newData.rev);
               imagexhr.setRequestHeader('Content-Type', 'application/jpeg');
               imagexhr.setRequestHeader('Accept', 'application/jpeg');
+              Ti.App.fireEvent('change_title', { title: 'Submitting' });
               imagexhr.send(currentMedia);
             } else {
               Ti.App.fireEvent('hide_indicator',{});
