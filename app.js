@@ -3,15 +3,6 @@ var indicatorShowing = false;
 
 Ti.UI.setBackgroundColor('white');
 
-var currentCarts;
-Titanium.App.addEventListener('cartsUpdated', function(carts) {
-  currentCarts = carts.carts;
-});
-
-Titanium.App.addEventListener('listInitialize', function() {
-  Ti.App.fireEvent('drawCartsTable', {carts:currentCarts});
-});
-
 var tabGroup = Titanium.UI.createTabGroup();
 var findWin = Titanium.UI.createWindow({  
   url:'javascripts/find.js',
@@ -28,8 +19,7 @@ var listWin = Titanium.UI.createWindow({
   url:'javascripts/list.js',
   title:'Carts Near You',
   barColor:"#333",
-  backgroundColor:'#5a5c64',
-  currentCarts: currentCarts
+  backgroundColor:'#5a5c64'
 });
 var listTab = Titanium.UI.createTab({  
   icon:'images/find.png',
@@ -40,7 +30,40 @@ var listTab = Titanium.UI.createTab({
 tabGroup.addTab(findTab);  
 tabGroup.addTab(listTab);
 
-tabGroup.open();
+var welcomeTabGroup = Titanium.UI.createTabGroup();
+var welcomeWin = Titanium.UI.createWindow({
+  url:'javascripts/welcome.js',
+  backgroundColor:'#476e8b',
+  title:'Welcome!',
+  barColor:"#333",
+  backTitle:'Close',
+  tabBarHidden:true
+});
+var welcomeTab = Titanium.UI.createTab({  
+  title:'Welcome!',
+  window:welcomeWin
+});
+welcomeTabGroup.addTab(welcomeTab);
+
+Ti.App.addEventListener('remove_welcome', function() {
+  if (Titanium.Platform.name == 'android') {
+    welcomeWin.close();
+  } else {
+    welcomeTabGroup.close();
+  }
+  Ti.App.Properties.setBool('welcomeViewed', true);
+  tabGroup.open();
+});
+
+if (Ti.App.Properties.hasProperty('welcomeViewed')) {
+  tabGroup.open();
+} else {
+  if (Titanium.Platform.name == 'android') {
+    welcomeWin.open();
+  } else {
+    welcomeTabGroup.open();
+  }
+}
 
 // ---------------------------------------------------------------
 // Create custom loading indicator

@@ -4,6 +4,7 @@ Titanium.include('../javascripts/helpers.js');
 var win = Titanium.UI.currentWindow;
 var data = [];
 var rowData = [];
+var currentCarts;
 
 var tableView = Titanium.UI.createTableView({
 	backgroundColor:'#5a5c64',
@@ -12,7 +13,7 @@ var tableView = Titanium.UI.createTableView({
 win.add(tableView);
 
 Titanium.App.addEventListener('cartsUpdated', function(carts) {
-  win.currentCarts = carts.carts;
+  currentCarts = carts.carts;
   data = [];
   rowData = [];
 });
@@ -24,7 +25,7 @@ win.addEventListener('focus', function(){
 Ti.App.fireEvent('listInitialize');
 
 Titanium.App.addEventListener('drawCartsTable', function(carts) {
-  win.currentCarts = carts.carts;
+  currentCarts = carts.carts;
   drawCartsTable();
 });
 
@@ -61,10 +62,10 @@ function buildData(cart) {
 }
 
 function drawCartsTable() {
-  for(var index in win.currentCarts) {
-  	if(win.currentCarts[index] != null) {
+  for(var index in currentCarts) {
+  	if(currentCarts[index] != null) {
   	  try{
-  			buildData(win.currentCarts[index]);
+  			buildData(currentCarts[index]);
   	  } catch(ex) {
   	    Titanium.API.error(ex);
   	  }

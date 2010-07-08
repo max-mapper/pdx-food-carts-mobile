@@ -8,6 +8,11 @@ var mapview;
 var usersLocation;
 var currentMapBounds;
 var jsonResponse;
+var currentCarts;
+
+Titanium.App.addEventListener('listInitialize', function() {
+  Ti.App.fireEvent('drawCartsTable', {carts:currentCarts});
+});
 
 var newCartButton = Titanium.UI.createButton({
 	systemButton:Titanium.UI.iPhone.SystemButton.ADD
@@ -61,13 +66,15 @@ function getCarts(location) {
   var lat = location.latitude;
   var lon = location.longitude;
   var url = "http://data.pdxapi.com/food_carts/_design/names/_spatial/points?bbox="+ (lon - one_block) + "," + (lat - one_block) + "," + (lon + one_block) + "," + (lat + one_block);
+  Ti.API.info(url);
   var xhr = Titanium.Network.createHTTPClient();
   xhr.onload = function() {
       Ti.App.fireEvent('hide_indicator',{});
-      var response = JSON.parse(this.responseText).spatial;
+      var response = JSON.parse(this.responseText).rows;
       var carts = Enumerable.map(response, function(cart){
         return {latitude: cart.bbox[1], longitude: cart.bbox[0], id:cart.id, name:cart.value.name};
       });
+      currentCarts = carts;
       Ti.App.fireEvent('cartsUpdated', {carts:carts});
       showCarts(carts);
   };
@@ -108,9 +115,10 @@ function showCarts(carts) {
 }
 
 Ti.Geolocation.purpose = "Find nearby Food Carts";
+
 Titanium.Geolocation.getCurrentPosition(function(e) {
-  usersLocation = {latitude:45.5123668,longitude:-122.6536583,animate:true,latitudeDelta:0.001, longitudeDelta:0.001};
-  // var usersLocation = {latitude:e.coords.latitude,longitude:e.coords.longitude,animate:true,latitudeDelta:0.001, longitudeDelta:0.001};
+  // usersLocation = {latitude:45.5123668,longitude:-122.6536583,animate:true,latitudeDelta:0.001, longitudeDelta:0.001};
+  var usersLocation = {latitude:e.coords.latitude,longitude:e.coords.longitude,animate:true,latitudeDelta:0.001, longitudeDelta:0.001};
 
   mapview = Titanium.Map.createView({
   	mapType: Titanium.Map.STANDARD_TYPE,
@@ -122,28 +130,46 @@ Titanium.Geolocation.getCurrentPosition(function(e) {
 
   win.open(mapview);
   win.add(mapview);
-  setTimeout(function() { mapview.zoom(1); mapview.zoom(1); },1000);
+
+  var findMeButton = Titanium.UI.createButtonBar({
+  	labels:[{image:'../images/location.png', width:30}],
+  	backgroundColor:'#A3D3F1',
+  	style:Titanium.UI.iPhone.SystemButtonStyle.BAR,
+  	height:30,
+  	width:'auto'
+  });
+
+  win.setLeftNavButton(findMeButton);
   
-  mapview.addEventListener('click',function(evt) {
-  	var annotation = evt.annotation;
-  	var title = evt.title;
-  	var clickSource = evt.clicksource;
-  	var couch_id = evt.annotation.couch_id;
-
-  	if (evt.clicksource == 'rightButton') {
-  	  var win = Titanium.UI.createWindow({
-    		url:'edit_details.js',
-    		backgroundColor:'#fff',
-    		title: title,
-    		couch_id: couch_id
-    	});
-      Titanium.UI.currentTab.open(win,{animated:true});
-  	}
+  findMeButton.addEventListener('click', function()
+  {
+  	mapview.setLocation(usersLocation);
   });
+  
+  setTimeout(function() { 
+    mapview.zoom(1);
+  
+    mapview.addEventListener('click',function(evt) {
+    	var annotation = evt.annotation;
+    	var title = evt.title;
+    	var clickSource = evt.clicksource;
+    	var couch_id = evt.annotation.couch_id;
 
-  mapview.addEventListener('regionChanged',function(evt){
-    Ti.App.fireEvent('hide_indicator',{});
-    currentMapBounds = GeoHelper.getMapBounds(evt);
-    getCarts({ latitude: currentMapBounds.center.lat, longitude: currentMapBounds.center.lng });
-  });
+    	if (evt.clicksource == 'rightButton') {
+    	  var win = Titanium.UI.createWindow({
+      		url:'edit_details.js',
+      		backgroundColor:'#fff',
+      		title: title,
+      		couch_id: couch_id
+      	});
+        Titanium.UI.currentTab.open(win,{animated:true});
+    	}
+    });
+
+    mapview.addEventListener('regionChanged',function(evt){
+      Ti.App.fireEvent('hide_indicator',{});
+      currentMapBounds = GeoHelper.getMapBounds(evt);
+      getCarts({ latitude: currentMapBounds.center.lat, longitude: currentMapBounds.center.lng });
+    });
+  },1000);
 });
