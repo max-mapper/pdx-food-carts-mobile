@@ -1,4 +1,4 @@
-<img src='http://github.com/maxogden/pdx-food-carts-mobile/raw/master/Design/screenshots/initial_screen.png' width=200/>
+<img src='http://github.com/maxogden/pdx-food-carts-mobile/raw/master/Design/screenshots/find.png' width=200/>
 
 <h1>PDX Food Cart Finder/Editor</h1> ... is a mobile application built using the Titanium framework and CouchDB. This means that the javascript source code found here can be imported into a Titanium Mobile project which can generate either an iPhone or Android native application that stores all of it's data on a remote CouchDB instance.
 
